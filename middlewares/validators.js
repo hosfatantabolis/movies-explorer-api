@@ -15,10 +15,13 @@ const signupValidator = celebrate({
       'string.min': 'Пароль: Минимально 6 символов',
       'string.empty': 'Пароль - это обязательное поле',
     }),
-    name: Joi.string().min(2).max(30).messages({
-      'string.min': 'Имя: Минимально 2 символа',
-      'string.max': 'Имя: Максимум 30 символов',
-    }),
+    name: Joi.string().min(2).required().max(30)
+      .messages({
+        'string.min': 'Имя: Минимально 2 символа',
+        'string.max': 'Имя: Максимум 30 символов',
+        'string.empty': 'Имя - обязательное поле',
+        'any.required': 'Имя - обязательное поле',
+      }),
   },
 });
 
@@ -39,20 +42,7 @@ const loginValidator = celebrate({
   },
 });
 
-const getMeValidator = celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required().messages({
-      'any.required': 'Необходима авторизация',
-    }),
-  }).unknown(true),
-});
-
 const updateUserInfoValidator = celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required().messages({
-      'any.required': 'Необходима авторизация',
-    }),
-  }).unknown(true),
   body: {
     email: Joi.string().required().custom((value, helper) => {
       if (validator.isEmail(value)) {
@@ -72,20 +62,7 @@ const updateUserInfoValidator = celebrate({
   },
 });
 
-const getSavedMoviesValidator = celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required().messages({
-      'any.required': 'Необходима авторизация',
-    }),
-  }).unknown(true),
-});
-
 const postMovieValidator = celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required().messages({
-      'any.required': 'Необходима авторизация',
-    }),
-  }).unknown(true),
   body: {
     country: Joi.string().required()
       .messages({
@@ -148,13 +125,12 @@ const postMovieValidator = celebrate({
         'string.empty': 'Название (на английском) - обязательное поле',
         'any.required': 'Название (на английском) - обязательное поле',
       }),
-    movieId: Joi.number().integer().positive().required()
+    movieId: Joi.string().required().length(24).hex()
       .messages({
+        'string.hex': 'Передан неверный ID фильма (24-битная HEX строка)',
+        'string.length': 'Передан неверный ID фильма (24-битная HEX строка)',
         'any.empty': 'ID фильма - обязательное поле',
         'any.required': 'ID фильма - обязательное поле',
-        'number.integer': 'ID фильма указан некорректно (целое число, больше нуля)',
-        'number.positive': 'ID фильма указан некорректно (целое число, больше нуля)',
-        'number.base': 'ID фильма указан некорректно (целое число, больше нуля)',
       }),
     thumbnail: Joi.string().required().custom((value, helper) => {
       if (validator.isURL(value)) {
@@ -169,19 +145,13 @@ const postMovieValidator = celebrate({
 });
 
 const deleteMovieValidator = celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required().messages({
-      'any.required': 'Необходима авторизация',
-    }),
-  }).unknown(true),
   params: {
-    id: Joi.number().integer().positive().required()
+    id: Joi.string().required().length(24).hex()
       .messages({
+        'string.hex': 'Передан неверный ID фильма (24-битная HEX строка)',
+        'string.length': 'Передан неверный ID фильма (24-битная HEX строка)',
         'any.empty': 'ID фильма - обязательное поле',
         'any.required': 'ID фильма - обязательное поле',
-        'number.integer': 'ID фильма указан некорректно (целое число, больше нуля)',
-        'number.positive': 'ID фильма указан некорректно (целое число, больше нуля)',
-        'number.base': 'ID фильма указан некорректно (целое число, больше нуля)',
       }),
   },
 });
@@ -189,9 +159,7 @@ const deleteMovieValidator = celebrate({
 module.exports = {
   signupValidator,
   loginValidator,
-  getMeValidator,
   updateUserInfoValidator,
-  getSavedMoviesValidator,
   postMovieValidator,
   deleteMovieValidator,
 };

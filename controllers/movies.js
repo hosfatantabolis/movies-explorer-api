@@ -1,5 +1,5 @@
 const Movie = require('../models/movie');
-const { Unauthorized, NotFound } = require('../utils/errors');
+const { NotFound, Forbidden } = require('../utils/errors');
 const {
   NOT_ALLOWED,
   MOVIE_NOT_FOUND,
@@ -52,23 +52,19 @@ const getSavedMovies = (req, res, next) => {
     });
 };
 const deleteMovieById = (req, res, next) => {
-  Movie.findOne({ movieId: req.params.id }).then((movie) => {
+  Movie.findById(req.params.id).then((movie) => {
     if (!movie) {
       throw new NotFound(MOVIE_NOT_FOUND);
     }
     if (String(movie.owner) !== String(req.user._id)) {
-      throw new Unauthorized(NOT_ALLOWED);
+      throw new Forbidden(NOT_ALLOWED);
     }
-    Movie.findOneAndRemove({ movieId: req.params.id })
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        next(err);
-      });
-  }).catch((err) => {
-    next(err);
-  });
+    movie.remove();
+    res.send(movie);
+  })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports = { postMovie, getSavedMovies, deleteMovieById };

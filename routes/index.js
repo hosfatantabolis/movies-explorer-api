@@ -8,6 +8,6 @@ const auth = require('../middlewares/auth.js');
 router.use('/', authRouter);
 router.use('/users', auth, usersRouter);
 router.use('/movies', auth, moviesRouter);
-router.use('/*', invalidRouter);
+router.use('/*', auth, invalidRouter);
 
 module.exports = router;

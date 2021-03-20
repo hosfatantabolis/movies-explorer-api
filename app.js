@@ -6,22 +6,21 @@ const bodyParser = require('body-parser');
 const errorHandler = require('./middlewares/errorHandler.js');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const rateLimiter = require('./middlewares/rateLimiter.js');
+const { BadRequest } = require('./utils/errors');
+const { DB_CONN_ERROR } = require('./utils/error_messages');
 
 require('dotenv').config();
 
-const { DB_ADRESS } = process.env;
+const { DB_ADRESS, NODE_ENV } = process.env;
 
-mongoose.connect(DB_ADRESS, {
+mongoose.connect(NODE_ENV === 'production' ? DB_ADRESS : 'mongodb://localhost:27017/filmsdb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
 });
 
-mongoose.connection.on('open', () => {
-  console.log('DB connected');
-});
 mongoose.connection.on('error', () => {
-  console.log('DB connection FAILED');
+  throw new BadRequest(DB_CONN_ERROR);
 });
 
 const router = require('./routes/index.js');
@@ -32,18 +31,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(requestLogger);
-app.use(helmet);
+app.use(helmet());
 app.use(rateLimiter);
-// app.get('/crash-test', () => {
-//   setTimeout(() => {
-//     throw new Error('Сервер сейчас упадёт');
-//   }, 0);
-// });
-
 app.use(router);
 app.use(errorLogger);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT);

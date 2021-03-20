@@ -39,7 +39,6 @@ const createUser = (req, res, next) => {
           name,
         }))
         .then((data) => {
-          console.log(data);
           const {
             email: emailForResponse,
             name: nameForResponse,
