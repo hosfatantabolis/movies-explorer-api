@@ -125,10 +125,10 @@ const postMovieValidator = celebrate({
         'string.empty': 'Название (на английском) - обязательное поле',
         'any.required': 'Название (на английском) - обязательное поле',
       }),
-    movieId: Joi.string().required().length(24).hex()
+    movieId: Joi.number().integer().positive()
       .messages({
-        'string.hex': 'Передан неверный ID фильма (24-битная HEX строка)',
-        'string.length': 'Передан неверный ID фильма (24-битная HEX строка)',
+        'number.integer': 'Передан неверный ID фильма',
+        'number.positive': 'Передан неверный ID фильма',
         'any.empty': 'ID фильма - обязательное поле',
         'any.required': 'ID фильма - обязательное поле',
       }),
