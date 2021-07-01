@@ -1,4 +1,4 @@
-# movies-explorer-api
+# Movies Explorer (API)
 
 Back-end часть проекта Movies-Explorer на ExpressJS. Сервис по поиску фильмов. Возможность сохранения фильмов, регистрация и авторизация.
 
